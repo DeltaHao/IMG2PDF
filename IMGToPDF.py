@@ -11,6 +11,8 @@ from reportlab.lib.pagesizes import A4, landscape
 
 from PIL import Image as pilImage
 
+#允许转换的文件类型
+__allow_type = ['.jpg', ',jpeg', '.bmp', '.png']
 
 def convert_imagesToPDF(file_dir, save_name):
     '''
@@ -21,11 +23,13 @@ def convert_imagesToPDF(file_dir, save_name):
     '''
     book_pages = []
     
-    for parent, dirnames, filenames in os.walk(file_dir):        #-- os.walk()方法：返回的是一个三元组(root,dirs,files)
-        # 选中目录下的所有图片                                     #-- root 所指的是当前正在遍历的这个文件夹的本身的地址
-        for file_name in filenames:                              #-- dirs 是一个 list ，内容是该文件夹中所有的目录的名字(不包括子目录)
-            file_path = os.path.join(parent, file_name)          #-- files 同样是 list , 内容是该文件夹中所有的文件(不包括子目录)
-            book_pages.append(file_path)
+    for parent, dirnames, filenames in os.walk(file_dir):# os.walk()方法：返回的是一个三元组(root,dirs,files)
+        # 选中目录下的所有图片                                    # root 所指的是当前正在遍历的这个文件夹的本身的地址
+        for file_name in filenames:                                # dirs 是一个 list ，内容是该文件夹中所有的目录的名字(不包括子目录)
+            file_path = os.path.join(parent, file_name)     # files 同样是 list , 内容是该文件夹中所有的文件(不包括子目录)
+            #是否图片
+            if __isAllow_file(file_path):
+                book_pages.append(file_path)
 
         save_path = os.path.join(file_dir, save_name)
 
@@ -34,6 +38,16 @@ def convert_imagesToPDF(file_dir, save_name):
             print("-----开始转换-----")
             __converted(save_path, book_pages)
             print("-----转换完成-----")
+
+
+def __isAllow_file(filepath):
+    '''
+    是否图片文件
+    '''
+    if filepath and (os.path.splitext(filepath)[1] in __allow_type):
+        return True
+    return False
+
 def __converted(save_book_name, book_pages = []):
     '''
     开始转换
